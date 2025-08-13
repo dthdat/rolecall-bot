@@ -67,7 +67,9 @@ def rollcall():
 
     send_to_telegram(text)
     return jsonify({"status": "ok"}), 200
-
+@app.route("/api/healthcheck")
+def healthcheck():
+    return jsonify({"status": "alive"}), 200
 if __name__ == "__main__":
     import os
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", PORT)))

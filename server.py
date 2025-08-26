@@ -13,8 +13,7 @@ SESSION_EXPIRE_SECONDS = 60 * 40  # 40 mins
 PORT = 5000  # Render will override with $PORT
 
 # Fixed 10 devices in the order you want them displayed
-DEVICE_ORDER = ["dat7ka", "hung7cm", "hung1cm","dothanhdat13", "accdeptrai", "dat2cm",
-                "hung6cm", "dths1", "hungkiki1", "onlybcr", "hungkiki","dothanhhung13",]
+DEVICE_ORDER = ["camon168f", "taolavuaf168", "xinloif168","cccd1", "dths2", "dothanhhung14",]
 
 # In-memory state per live (keyed by normalized live name)
 # state = {
@@ -177,6 +176,31 @@ def rollcall():
     _update_single_message(live_key)
 
     return jsonify({"status": "ok"}), 200
+
+@app.route("/logout", methods=["POST"])
+def logout():
+
+    try:
+        data = request.get_json(force=True)
+    except Exception:
+        return jsonify({"error": "Invalid JSON"}), 400
+
+    username = (data.get("username") or "").strip()
+    if not username:
+        return jsonify({"error": "Missing username"}), 400
+
+    username = _norm(username)
+
+    
+
+    # Send a separate warning message to Telegram
+    warning_text = f"⚠️ Tài khoản <b>{username}</b> bị đăng xuất."
+    _telegram_send(warning_text)
+
+    print(f"Logout warning sent for '{username}'.")
+    return jsonify({"status": "logout_warning_sent"}), 200
+# =================================================================
+
 
 @app.route("/api/healthcheck")
 def healthcheck():

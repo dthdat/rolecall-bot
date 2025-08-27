@@ -7,8 +7,8 @@ from math import ceil
 # =========================
 # CONFIG
 # =========================
-TOKEN = "7577508576:AAHfLBilu1QlOwWT_ZWfIkXrf6pZrHvBo_s"
-CHAT_ID = "-4813389883"
+TOKEN = os.environ.get("TELEGRAM_TOKEN")
+CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID")
 SESSION_EXPIRE_SECONDS = 60 * 40  # 40 mins
 PORT = 5000  # Render will override with $PORT
 

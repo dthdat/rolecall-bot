@@ -13,7 +13,7 @@ SESSION_EXPIRE_SECONDS = 60 * 40  # 40 mins
 PORT = 5000  # Render will override with $PORT
 
 # Fixed 10 devices in the order you want them displayed
-DEVICE_ORDER = ["camon168f", "taolavuaf168", "xinloif168","cccd1", "dths2", "dothanhhung14",]
+DEVICE_ORDER = []
 
 # In-memory state per live (keyed by normalized live name)
 # state = {

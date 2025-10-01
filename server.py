@@ -218,7 +218,7 @@ def winner():
     money = _norm(money)
 
     # Build winner message
-    winner_text = f"⚠️ Tài khoản <b>{username}</b> trúng thưởng <b>{money}</b>."
+    winner_text = f"💲 Tài khoản <b>{username}</b> trúng thưởng <b>{money}</b>."
     _telegram_send(winner_text)
 
     print(f"Winner message sent for '{username}' with prize '{money}'.")

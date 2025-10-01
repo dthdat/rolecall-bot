@@ -201,29 +201,6 @@ def logout():
     return jsonify({"status": "logout_warning_sent"}), 200
 # =================================================================
 
-@app.route("/winner", methods=["POST"])
-def winner():
-    try:
-        data = request.get_json(force=True)
-    except Exception:
-        return jsonify({"error": "Invalid JSON"}), 400
-
-    username = (data.get("username") or "").strip()
-    money = (data.get("money") or "").strip()
-
-    if not username or not money:
-        return jsonify({"error": "Missing username or money"}), 400
-
-    username = _norm(username)
-    money = _norm(money)
-
-    # Build winner message
-    winner_text = f"⚠️ Tài khoản <b>{username}</b> trúng thưởng <b>{money}</b>."
-    _telegram_send(winner_text)
-
-    print(f"Winner message sent for '{username}' with prize '{money}'.")
-    return jsonify({"status": "winner_sent"}), 200
-
 
 @app.route("/api/healthcheck")
 def healthcheck():

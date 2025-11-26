@@ -199,6 +199,24 @@ def logout():
 
     print(f"Logout warning sent for '{username}'.")
     return jsonify({"status": "logout_warning_sent"}), 200
+
+@app.route("/banned", methods=["POST"])
+def banned():
+    try:
+        data = request.get_json(force=True)
+    except Exception:
+        return jsonify({"error": "Invalid JSON"}), 400
+
+    # We don't strictly need a username, but it helps if the extension sends it
+    # If not sent, we can just say "A bot was banned"
+    username = (data.get("username") or "").strip()
+    
+    # Send a critical warning message to Telegram
+    ban_text = f"🚨Tài khoản <b>{username}</b> đã bị cấm dùng."
+    _telegram_send(ban_text)
+
+    print(f"BAN warning sent for '{username}'.")
+    return jsonify({"status": "ban_warning_sent"}), 200
 # =================================================================
 
 @app.route("/winner", methods=["POST"])

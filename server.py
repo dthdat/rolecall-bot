@@ -49,22 +49,46 @@ def _render_checklist_text(title: str, machines: set[str]) -> str:
     cells = []
     for name in display:
         mark = "✅" if name in machines else "☐"
-        cells.append(f"{mark} {name}")
+        cells.append((mark, name))
 
-    # Column formatting (2 columns) inside <pre> to keep alignment
+    # Two-column layout with fixed width and text wrapping
+    COL_WIDTH = 14  # Max chars per column (adjust for mobile)
     cols = 2
-    col_width = max(len(c) for c in cells) + 2 if cells else 10
     rows = ceil(len(cells) / cols)
-    lines = []
+    
+    def wrap_cell(mark: str, name: str, width: int) -> list[str]:
+        """Wrap a cell into multiple lines, mark on first line only."""
+        # First line has the mark
+        first_line_space = width - 2  # "✅ " takes ~2 chars visually
+        result = []
+        if len(name) <= first_line_space:
+            result.append(f"{mark} {name}")
+        else:
+            # Wrap the name
+            result.append(f"{mark} {name[:first_line_space]}")
+            remaining = name[first_line_space:]
+            while remaining:
+                chunk = remaining[:width]
+                result.append(f"   {chunk}")  # Indent continuation
+                remaining = remaining[width:]
+        return result
+    
+    output_lines = []
     for r in range(rows):
-        left = cells[r] if r < len(cells) else ""
-        right_index = r + rows
-        right = cells[right_index] if right_index < len(cells) else ""
-        # pad left column so right aligns nicely in monospace
-        line = left.ljust(col_width) + right
-        lines.append(line)
+        left_idx = r
+        right_idx = r + rows
+        
+        left_lines = wrap_cell(*cells[left_idx], COL_WIDTH) if left_idx < len(cells) else [""]
+        right_lines = wrap_cell(*cells[right_idx], COL_WIDTH) if right_idx < len(cells) else [""]
+        
+        # Combine left and right, padding to align columns
+        max_lines = max(len(left_lines), len(right_lines))
+        for i in range(max_lines):
+            left = left_lines[i] if i < len(left_lines) else ""
+            right = right_lines[i] if i < len(right_lines) else ""
+            output_lines.append(f"{left:<{COL_WIDTH + 2}}{right}")
 
-    grid = "\n".join(lines) if lines else "(no devices yet)"
+    grid = "\n".join(output_lines) if output_lines else "(no devices yet)"
     # Use HTML parse mode; wrap table in <pre> to preserve spaces
     header = f"🔴 Rollcall – {title}"
     return f"{header}\n<pre>{grid}</pre>"

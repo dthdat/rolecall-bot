@@ -241,6 +241,23 @@ def banned():
 
     print(f"BAN warning sent for '{username}'.")
     return jsonify({"status": "ban_warning_sent"}), 200
+
+@app.route("/code", methods=["POST"])
+def code_endpoint():
+    try:
+        data = request.get_json(force=True)
+    except Exception:
+        return jsonify({"error": "Invalid JSON"}), 400
+
+    code = (data.get("code") or "").strip()
+    
+    # Send message to Telegram with copyable code
+    # <code> tags make text monospace and tappable to copy
+    code_text = f"🎁 CODE MỚI: <code>{code}</code>\n📍 WEB: F168"
+    _telegram_send(code_text)
+
+    print(f"Code notification sent: '{code}'")
+    return jsonify({"status": "code_sent"}), 200
 # =================================================================
 
 @app.route("/winner", methods=["POST"])

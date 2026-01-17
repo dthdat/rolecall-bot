@@ -235,6 +235,7 @@ def banned():
     # If not sent, we can just say "A bot was banned"
     username = (data.get("username") or "").strip()
     
+    
     # Send a critical warning message to Telegram
     ban_text = f"🚨Tài khoản <b>{username}</b> đã bị cấm dùng."
     _telegram_send(ban_text)
@@ -250,10 +251,19 @@ def code_endpoint():
         return jsonify({"error": "Invalid JSON"}), 400
 
     code = (data.get("code") or "").strip()
+    website = (data.get("website") or "").strip()
     
     # Send message to Telegram with copyable code
     # <code> tags make text monospace and tappable to copy
-    code_text = f"🎁 CODE MỚI: <code>{code}</code>\n📍 WEB: F168"
+    # make it embed the code sumbit website inside the name 
+    # For F168 use https://f168km.info/ for FLY88 use https://fly88code.com/
+    if website == "F168":
+        code_text = f"🎁 CODE MỚI: <code>{code}</code>\n📍 WEB: <a href='https://f168km.info/'>F168</a>"
+    elif website == "FLY88":
+        code_text = f"🎁 CODE MỚI: <code>{code}</code>\n📍 WEB: <a href='https://fly88code.com/'>FLY88</a>"
+    else:
+        code_text = f"🎁 CODE MỚI: <code>{code}</code>\n📍 WEB: {website}"
+
     _telegram_send(code_text)
 
     print(f"Code notification sent: '{code}'")

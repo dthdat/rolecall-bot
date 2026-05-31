@@ -250,17 +250,59 @@ def code_endpoint():
     except Exception:
         return jsonify({"error": "Invalid JSON"}), 400
 
-    code = (data.get("code") or "").strip()
     website = (data.get("website") or "").strip()
+    is_batch = data.get("batch", False)
+
+    # Batch mode: multiple codes in one notification
+    if is_batch and data.get("codes"):
+        codes = data["codes"]
+        
+        # Pick the right redeem URL
+        if website == "C168_TG":
+            redeem_url = "https://nhapma-c168.pages.dev/"
+            redeem_label = "C168"
+        elif website == "F168":
+            redeem_url = "https://f168km.info/"
+            redeem_label = "F168"
+        elif website == "FLY88":
+            redeem_url = "https://fly88code.com/"
+            redeem_label = "FLY88"
+        else:
+            redeem_url = ""
+            redeem_label = website
+        
+        # Build code list - each code on its own line, tappable to copy
+        code_lines = [f"<code>{c}</code>" for c in codes]
+        
+        # Telegram messages max 4096 chars, split if needed
+        header = f"🆕 <b>{len(codes)} CODE MỚI</b> ({redeem_label})\n"
+        if redeem_url:
+            footer = f"\n📍 <a href='{redeem_url}'>{redeem_label}</a>"
+        else:
+            footer = f"\n📍 {redeem_label}"
+        
+        # Send in chunks to stay under Telegram limit
+        chunk_size = 50  # codes per message
+        for i in range(0, len(code_lines), chunk_size):
+            chunk = code_lines[i:i + chunk_size]
+            chunk_num = f" ({i // chunk_size + 1})" if len(codes) > chunk_size else ""
+            code_text = header.replace(")", f"){chunk_num}") if chunk_num else header
+            code_text += "\n".join(chunk)
+            code_text += footer
+            _telegram_send(code_text)
+        
+        print(f"Batch code notification sent: {len(codes)} codes for {website}")
+        return jsonify({"status": "batch_sent", "count": len(codes)}), 200
+
+    # Single code mode (F168, FLY88, etc.)
+    code = (data.get("code") or "").strip()
     
-    # Send message to Telegram with copyable code
-    # <code> tags make text monospace and tappable to copy
-    # make it embed the code sumbit website inside the name 
-    # For F168 use https://f168km.info/ for FLY88 use https://fly88code.com/
     if website == "F168":
         code_text = f"🎁 CODE MỚI: <code>{code}</code>\n📍 WEB: <a href='https://f168km.info/'>F168</a>"
     elif website == "FLY88":
         code_text = f"🎁 CODE MỚI: <code>{code}</code>\n📍 WEB: <a href='https://fly88code.com/'>FLY88</a>"
+    elif website == "C168_TG":
+        code_text = f"🎁 CODE MỚI: <code>{code}</code>\n📍 WEB: <a href='https://nhapma-c168.pages.dev/'>C168</a>"
     else:
         code_text = f"🎁 CODE MỚI: <code>{code}</code>\n📍 WEB: {website}"
 

@@ -270,16 +270,23 @@ def code_endpoint():
         else:
             redeem_url = ""
             redeem_label = website
-        
-        # Build code list - each code on its own line, tappable to copy
-        code_lines = [f"<code>{c}</code>" for c in codes]
+        # Build code list - split into 2 columns for C168_TG to be nicer
+        if website == "C168_TG":
+            code_lines = []
+            for i in range(0, len(codes), 2):
+                if i + 1 < len(codes):
+                    code_lines.append(f"<code>{codes[i]}</code>      <code>{codes[i+1]}</code>")
+                else:
+                    code_lines.append(f"<code>{codes[i]}</code>")
+        else:
+            code_lines = [f"<code>{c}</code>" for c in codes]
         
         # Telegram messages max 4096 chars, split if needed
-        header = f"🆕 <b>{len(codes)} CODE MỚI</b> ({redeem_label})\n"
+        header = f"🎁 <b>{len(codes)} CODE MỚI</b> ({redeem_label})\n"
         if redeem_url:
-            footer = f"\n📍 <a href='{redeem_url}'>{redeem_label}</a>"
+            footer = f"\n📍 WEB: <a href='{redeem_url}'>{redeem_label}</a>"
         else:
-            footer = f"\n📍 {redeem_label}"
+            footer = f"\n📍 WEB: {redeem_label}"
         
         # Send in chunks to stay under Telegram limit
         chunk_size = 50  # codes per message

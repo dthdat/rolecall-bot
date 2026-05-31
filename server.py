@@ -261,6 +261,9 @@ def code_endpoint():
         if website == "C168_TG":
             redeem_url = "https://nhapma-c168.pages.dev/"
             redeem_label = "C168"
+        elif website == "SC88_TG":
+            redeem_url = "https://nhap-code-sc88.pages.dev/"
+            redeem_label = "SC88"
         elif website == "F168":
             redeem_url = "https://f168km.info/"
             redeem_label = "F168"
@@ -270,8 +273,8 @@ def code_endpoint():
         else:
             redeem_url = ""
             redeem_label = website
-        # Build code list - split into 2 columns for C168_TG to be nicer
-        if website == "C168_TG":
+        # Build code list - split into 2 columns for C168_TG and SC88_TG to be nicer
+        if website in ["C168_TG", "SC88_TG"]:
             code_lines = []
             for i in range(0, len(codes), 2):
                 if i + 1 < len(codes):
@@ -310,6 +313,8 @@ def code_endpoint():
         code_text = f"🎁 CODE MỚI: <code>{code}</code>\n📍 WEB: <a href='https://fly88code.com/'>FLY88</a>"
     elif website == "C168_TG":
         code_text = f"🎁 CODE MỚI: <code>{code}</code>\n📍 WEB: <a href='https://nhapma-c168.pages.dev/'>C168</a>"
+    elif website in ["SC88_TG", "SC88"]:
+        code_text = f"🎁 CODE MỚI: <code>{code}</code>\n📍 WEB: <a href='https://nhap-code-sc88.pages.dev/'>SC88</a>"
     else:
         code_text = f"🎁 CODE MỚI: <code>{code}</code>\n📍 WEB: {website}"
 
